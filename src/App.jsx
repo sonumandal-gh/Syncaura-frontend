@@ -37,19 +37,29 @@ export default function App() {
 
   useEffect(() => {
     dispatch(refreshAccessToken());
+
+    // ✅ BACKEND CONNECTION TEST
+    fetch("/api/test")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("✅ Backend Connected:", data);
+      })
+      .catch((err) => {
+        console.error("❌ Backend NOT connected:", err);
+      });
+
   }, [dispatch]);
+
   console.log({ user, authChecking });
 
   if (authChecking) {
     return (
-      <>
-        <div
-          data-theme={isDark ? "dark" : "light"}
-          className="w-full h-screen bg-white dark:bg-black flex items-center justify-center "
-        >
-          <Loader className="size-5 lg:size-13 page-2xl:size-15 text-blue-600 dark:text-[#73FBFD] animate-spin duration-200" />
-        </div>
-      </>
+      <div
+        data-theme={isDark ? "dark" : "light"}
+        className="w-full h-screen bg-white dark:bg-black flex items-center justify-center"
+      >
+        <Loader className="size-5 lg:size-13 page-2xl:size-15 text-blue-600 dark:text-[#73FBFD] animate-spin duration-200" />
+      </div>
     );
   }
 
@@ -76,19 +86,18 @@ export default function App() {
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
           </Route>
+
           <Route
             element={<ProtectRoute allowedRoles={["user", "admin", "co-admin"]} />}
           >
             <Route path="/meet/:id" element={<CurrentMeet />} />
           </Route>
+
           <Route element={<ProtectRoute allowedRoles={["admin"]} />}>
             <Route
               path="/admin"
               element={
-                <MainLayout
-                  SideBar={MobileSidebar}
-                  TopbarComponent={Header}
-                >
+                <MainLayout SideBar={MobileSidebar} TopbarComponent={Header}>
                   <Admin />
                 </MainLayout>
               }
@@ -99,10 +108,7 @@ export default function App() {
             <Route
               path="/co-admin"
               element={
-                <MainLayout
-                  SideBar={MobileSidebar}
-                  TopbarComponent={Header}
-                >
+                <MainLayout SideBar={MobileSidebar} TopbarComponent={Header}>
                   <CoAdmin />
                 </MainLayout>
               }
